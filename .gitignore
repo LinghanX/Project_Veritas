@@ -103,6 +103,6 @@ ENV/
 .idea/
 
 #latex
-.aux
-.loh
-.gz
+*.aux
+*.loh
+*.gz
