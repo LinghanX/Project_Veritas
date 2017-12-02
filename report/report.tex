@@ -18,7 +18,7 @@
 \begin{document}
 \section*{1 Introduction and Background}
 
-"Fake news" became an increasingly coined term and was almost non-existent in the general context and media providers prior to October 2016 of the Presidential Election. In late 2016, the top 20 fake news stories on Facebook were reported to outperform the top 20 real news stories, which was determined by the number of comments, reactions, and shares. As seen in figure a, it is shown the the number of real news stories did not outperform the number of fake news stories towards the end of 2016. Undoubtedly, these stories and articles our shaping and influencing the thoughts and opinions of millions of individuals and companies need to step in to help stop the spread of fake news.
+"Fake news" became an increasingly coined term and was almost non-existent in the general context and media providers prior to October 2016 of the Presidential Election. In late 2016, the top 20 fake news stories on Facebook were reported to outperform the top 20 real news stories, which was determined by the number of comments, reactions, and shares. As seen in figure a, it is shown that the number of real news stories did not outperform the number of fake news stories towards the end of 2016. Undoubtedly, these stories and articles our shaping and influencing the thoughts and opinions of millions of individuals and companies need to step in to help stop the spread of fake news.
 \\\\
 With companies such as Facebook and Google who provide ad revenue to sites that host news stories, it should be the responsibility of these tech companies to be accountable for what content is displayed. Filtering out false information in order to correctly inform and educate our society, especially when it comes to presidential elections, is an extremely important and challenging task. Companies such as Signal Media have built AI-powered media monitoring in order to help this problem after they had discovered 'fake news' as being a headline in 27,000 articles over the course of the year (see figure b).
 
@@ -34,30 +34,40 @@ With companies such as Facebook and Google who provide ad revenue to sites that 
 }
 \end{figure}
 
-Fake news posts have exploited the feeds of Facebook users' which could deeply impact the options of our society if we loose our ability over time to decipher fake news from real news. Due to this problem, the data science community has looked to respond to this problem through a Kaggle competition called the Fake News Challenge \footnote{\url{http://www.fakenewschallenge.org}}. Determining real news from fake news is an extremely challenging task within the machine learning and natural language processing community. Creating models that accurately filter out fake news without removing real news sources is a very complicated task. In our approach to tackle this problem, we wanted to combat fake news by implementing a bayesian model that can differentiate fake news from real news. Expanding on this original approach, we have implemented several supervised machine learning based algorithms in order to compare text classifiers on fake news recognition. 
+Fake news posts have exploited the feeds of Facebook users' which could deeply impact the options of our society if we loose our ability over time to decipher fake news from real news. Due to this problem, the data science community has looked to respond to this problem through a Kaggle competition called the Fake News Challenge \footnote{\url{http://www.fakenewschallenge.org}}. Determining real news from fake news is an extremely challenging task within the machine learning and natural language processing community. Creating models that accurately filter out fake news without removing real news sources is a very complicated task due to how we define fake news itself in order to correctly label real and fake news. 
+\\
+In our approach to tackle this problem, we wanted to combat fake news by implementing bayesian models that can differentiate fake news from real news. Expanding on this original approach, we have implemented several supervised machine learning based algorithms in order to compare text classifiers on fake news recognition. 
 
 
 \subsection*{1.1 The Data}
-What makes this challenge interesting and hard is around the very definition of fake news. Since we did not want to be bogged down by deciphering, scraping the web, and labeling fake news vs. real news, we found a dataset that contains almost 11,000 articles that are tagged as either real or fake news \footnote{\url{https://github.com/GeorgeMcIntire/fake_real_news_dataset}}. 
+As mentioned previously, what makes this challenge interesting and hard is around the very definition of fake news. Since we did not want to be caught up in the process of deciphering, scraping the web, and labeling fake news vs. real news, we found a dataset that contains almost 11,000 articles that are tagged as either real or fake news \footnote{\url{https://github.com/GeorgeMcIntire/fake_real_news_dataset}}. The data set seems to follow the definition of fake news provided by First Draft News comprises of 7 types of fake content: false connection, false context, manipulated content, satire or parody, misleading content, imposter content, and fabricated content. We started by separating the labels and set up training data and testing data.
 
 
 \subsection*{1.2 Methods}
-We performed supervised machine learning techniques such as naive bayes, multinominal bayes with count vector and TF-IDF, along with SVM and Random Tree Forest. With respect to language processing, tokenization, filtering, lemmatization, and stemming were all used for preprocessing the titles and body text of the articles in the data set. For our evaluation process, we used a confusion matrix to understand the accuracy of our models.
+We performed supervised machine learning techniques such as naive bayes, multinominal bayes with count vectorizor (bag-of-words) and Term Frequency–Inverse Document Frequency (TF-IDF), along with SVM and Random Tree Forest. With respect to language processing, tokenization, filtering, lemmatization, and stemming were all used for preprocessing the titles and body text of the articles in the data set. For our evaluation process, we used a confusion matrix to understand the accuracy of our models.
 
 \subsection*{1.3 Related Work}
+Within the industry, companies such as Facebook have stumbled in this combat, mostly relying on users reporting fake news and outsourcing this task to third parties in order to remove direct bias. Although Facebook has made a few attempts and run some tests, it's clear that this is no easy task and can certainly annoy users.
 
+\begin{figure}[h]
+\centering
+{
+\includegraphics[width=0.3\linewidth]{fbfake}
+}
+\end{figure}
+
+Some of the top teams that participated in the Fake News Challenge ended up using neural networks to get the best results. The number one team, SOLAT in the SWEN\footnote{\url{https://github.com/Cisco-Talos/fnc-1}}, received the best results using a weighted average between gradient-boosted decision trees and a deep convolutional neural network. Looking at the models that many teams had to take in order to receive the best results, we were not expecting our naive bayes model to product great results.
 
 \section*{2 Supervised Approach}
 
-\subsection*{2.1 Naive Bayes}
+\subsection*{2.1 Multinominal Naive Bayes}
 
-\subsection*{2.2 Multinominal Naive Bayes}
-
-\subsubsection*{2.2.1 Count Vectorization}
+\subsubsection*{2.1.1 Count Vectorization}
 
 
-\subsubsection*{2.2.2 TF-IDF}
+\subsubsection*{2.1.2 TF-IDF}
 
+The max threshhold is set at .7 for the TF-IDF vectorizer in order to remove words which appear in more than 70 percent of the articles. Before building the vectors, we removed English stop words from the data.
 
 \subsection*{2.2 SVM}
 
@@ -71,6 +81,11 @@ We performed supervised machine learning techniques such as naive bayes, multino
 \section*{3 Evaluation}
 
 \section*{4 Acknowledgments}
+
+
+\section*{5 Discussion}
+
+Through our implementations and attempts to combat fake news, it is clear that it is no easy task, but it is a solvable problem using artificial intelligence and machine learning. It is a problem that could impact our society's perceptions and opinions if it is not addressed by the technological community.
 
 
 \begin{thebibliography}{9}
@@ -89,6 +104,22 @@ Russel and Norvig.
 \bibitem{Signal}  
 \textit{12 Months of Fake News Headlines, Dissected with Media Monitoring}. 
  \url{https://signalmedia.co/media-monitoring-blog/fake-news-dissected-media-monitoring/}.
+
+\bibitem{firstdraftnews}  
+\textit{Facebook's fake news experiment backfires}.
+[\textit{BBC News}]. 
+ \url{https://firstdraftnews.com/fake-news-complicated}.
+ 
+ 
+\bibitem{bbc}  
+\textit{Fake News. It's Complicated}.
+[\textit{BBC News}]. 
+ \url{http://www.bbc.com/news/technology-41900877}.
+ 
+\bibitem{talos}  
+\textit{Talos Targets Disinformation with Fake News Challenge Victory}.
+[\textit{Talos Intelligence}]. 
+ \url{https://blog.talosintelligence.com/2017/06/talos-fake-news-challenge.html}.
 
 \end{thebibliography}
 
