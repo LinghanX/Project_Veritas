@@ -60,22 +60,46 @@ Some of the top teams that participated in the Fake News Challenge ended up usin
 
 \section*{2 Supervised Approach}
 
-\subsection*{2.1 Multinominal Naive Bayes}
+\subsection*{2.1 Feature Extraction}
+
+For feature extraction, we used the body text of the articles in the data set and ignored the titles. We thought that using the longer text would allow for distinct words and features from the data set. For understanding if the words and tokens in the articles text had a significant impact on whether the news was fake or real. 
+\\
+Given a list of documentations, feature extraction converts each of the documents into a list of features, generating a sparse matrix for our Naive Bayes model. Features from our text classifier could include anything from manually created labels to the occurrence of words in the texts. In our case the naive assumption is that given that fact that a document is fake or authentic, the occurrence of each word is independent from each other. To implement our feature extraction, we first extracted words from the documents/text. To do this, we used stop words, tokenization, and stemming.
+\\
+English stop words were removed from the data for better results. Stop words are frequent in our natural language but usually doesn't have additional information, such as words like "a", "on", "this", "the", "is", etc. By removing them the distraction in the vocabulary is usually reduced. In tokenization, the document is tokenized into a list of words, with all the punctuation being taken away and making all words lower case. In stemming, the words that have the same roots are assigned to the same root word. For example: "attack", "attacking" and "attacked" will be categorized as the same root word, "attack".
 
 \subsubsection*{2.1.1 Count Vectorization}
 
+After the word list for each document is built, a vocabulary can be established by looping through the documents and finding the set of words that occurred. This is often referred as "bag-of-words". Until this point, we have 'sanitized' our input text and can start building the count vector. There are two approaches that we implemented to get the term frequency matrix: naive boolean term frequency and logarithmic term frequency. The naive boolean term frequency is the simple way of counting the occurrence of each word in the vocabulary and simply assigning their occurrences in the matrix. This method is easier to implement and in many case yields reasonable results. In the second approach, we assume that the correlation between how important a word is a how many times the word occurs in the text should not be linear. If the word "love" occurred 4 times in a text, this does not mean that the author "loves" 4 times more than one who only used "love" once in their text. Therefore a possible improvement to that is to use logarithmic occurrence:
+$$Frequency(w,d) = 1 + log(word_count)$$
+ 
+To compare the results of our implementation, CountVectorizer was also used from the scikit-learn package and in this stage no weighting is assigned to any of these words.
+
 
 \subsubsection*{2.1.2 TF-IDF}
+In addition to the counting of term frequency, some words will occur very frequently in the documents to a point hat the occurrence of them does not provide much additional information. For example, if the word "American" is present in every text, then the occurrence of this word does not provide any information for our classifier. In such circumstances the inverse document-frequency (IDF) is a common practice method to weight on the term frequency.
+
+$$idf(w,D)=log((1+n_d)/(1+df(d,t)))+1$$
+
+IN the resulting matrix, we apply the idf with the generated tf to produce a weighted vector, this is called TF-IDF:
+
+$$tf-idf(w)=tf(w)*idf(w)$$
+
+Note that the 1 is there as a 'smoothing factor' to address the situation that the denominator is 0. The final step of our feature extraction is to normalize the TF-IDF matrix so that the resulting variance between each word are reduced to reflect their weighted value.
+
+\subsection*{2.2 Models}
+
+\subsubsection*{2.2.1 Multinominal Naive Bayes}
 
 The max threshhold is set at .7 for the TF-IDF vectorizer in order to remove words which appear in more than 70 percent of the articles. Before building the vectors, we removed English stop words from the data.
 
-\subsection*{2.2 SVM}
+\subsubsection*{2.2.2 SVM}
 
 
-\subsection*{2.3 Random Forest}
+\subsubsection*{2.2.3 Random Forest}
  
  
-\subsection*{2.4 Neural Network}
+\subsubsection*{2.2.4 Neural Network}
 
 
 \section*{3 Evaluation}
