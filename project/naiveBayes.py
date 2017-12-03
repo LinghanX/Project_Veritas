@@ -14,8 +14,8 @@ world_label_matrix = []
 NUM_OF_LABELS = 2
 # Traning data consists of 70 % of the original
 # input file
-TRAINING_SPLIT_PERCENT = 0.70
-DATA_FILE = "../data/fake_or_real_news_nb.csv"
+TRAINING_SPLIT_PERCENT = 0.80
+DATA_FILE = "../data/small_dataset.csv"
 TRAINING_FILE = "../data/training_naive_bayes.json"
 
 label_index = {
@@ -171,6 +171,7 @@ def evaluateForAccuracy(testingDF, prior_of_fake, prior_of_real):
             label = "FAKE"
         if label == row["label"].strip().upper():
             accuracyCount+=1
+        results.append(label)
     # Number of rows labeled accuratly/ Total number of rows
     print "Accuracy %",float(accuracyCount)/float(len(testingDF))*100
     return results
@@ -244,7 +245,12 @@ def main():
         f.close()
 
         print "Calculating Accuracy Results"
-        evaluateForAccuracy(testingDF, prior_of_fake, prior_of_real)
+        results = evaluateForAccuracy(testingDF, prior_of_fake, prior_of_real)
+
+        print "Writing resulting labels to file"
+        f = open("../data/results_nb.json", "w")
+        f.write(json.dumps(results))
+        f.close()
     except IOError as err:
         print str(err)
     except UnicodeDecodeError as err:
