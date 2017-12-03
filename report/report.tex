@@ -112,14 +112,14 @@ Random forest was tried as a classifier for the same training data set and test 
 yielded a lower accuracy value than all of the models except multinomial naive bayes TF-IDF. Our model using a Random Forest Classifier achieves an accuracy of roughly 83 percent when using features such as TF-IDF and count vector.
  
  
-\subsubsection*{2.2.4 Linear Regression}
-
+\subsubsection*{2.2.4 Logistic Regression}
+Unlike SVMS, Logistic regression allows probabilities to be modeled, and unlike naive bays, features can be dependent, so we originally believed that this would give fairly accurate results.
 
 \section*{3 Evaluation}
 
 To evaluate the different models and our results, we created a confusion matrix for each model in order to describe the performance of the classifier on the test data since we know the 'true'/original label.\\
 
-We originally anticipated that feature extraction using TF-IDF would give better results for all models. However, using the bag-of-words approach with our MNB implementation proved to be a fast and fairly accurate approach in the indentification of fake and real news with this dataset. MNB using TF-IDF proved to be the classifier that was least correct. Interestingly enough, it seemed that stemming an lemmatization slightly decreases the accuracy of prediction for all models. The fake news detection system that achieved the highest accuracy and best evaluation was the SVM using TF-IDF.
+We originally anticipated that feature extraction using TF-IDF would give better results for all models. However, using the bag-of-words approach with our MNB implementation proved to be a fast and fairly accurate approach in the indentification of fake and real news with this dataset. MNB using TF-IDF proved to be the classifier that was least correct. Interestingly enough, it seemed that stemming an lemmatization slightly decreases the accuracy of prediction for all models. The fake news detection system that achieved the highest accuracy and best evaluation was the SVM using TF-IDF, and logistic regression with almost the same accuracy.
 
 \begin{figure}[h]
 \centering
