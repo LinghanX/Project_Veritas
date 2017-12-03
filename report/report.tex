@@ -77,11 +77,11 @@ To compare the results of our implementation, CountVectorizer was also used from
 
 
 \subsubsection*{2.1.2 TF-IDF}
-In addition to the counting of term frequency, some words will occur very frequently in the documents to a point hat the occurrence of them does not provide much additional information. For example, if the word "American" is present in every text, then the occurrence of this word does not provide any information for our classifier. In such circumstances the inverse document-frequency (IDF) is a common practice method to weight on the term frequency.
+In addition to the counting of term frequency, some words will occur very frequently in the documents to a point that the occurrence of them does not provide much additional information. For example, if the word "American" is present in every text, then the occurrence of this word does not provide any information for our classifier. In such circumstances the inverse document-frequency (IDF) is a common practice method to weight on the term frequency.
 
 $$idf(w,D)=log((1+n_d)/(1+df(d,t)))+1$$
 
-IN the resulting matrix, we apply the idf with the generated tf to produce a weighted vector, this is called TF-IDF:
+In the resulting matrix, we apply the idf with the generated tf to produce a weighted vector, this is called TF-IDF:
 
 $$tf-idf(w)=tf(w)*idf(w)$$
 
@@ -91,7 +91,7 @@ Note that the 1 is there as a 'smoothing factor' to address the situation that t
 
 \subsubsection*{2.2.1 Multinominal Naive Bayes}
 
-The max threshhold is set at .7 for the TF-IDF vectorizer in order to remove words which appear in more than 70 percent of the articles. Before building the vectors, we removed English stop words from the data.
+
 
 \subsubsection*{2.2.2 SVM}
 
