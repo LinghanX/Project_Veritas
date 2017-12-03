@@ -1,0 +1,6 @@
+title,text,label
+,Chinese Beijing Chinese,REAL
+,Chinese Chinese Shangai,REAL
+,Chinese Macao,REAL
+,Tokyo Japan Chinese,FAKE
+,Chinese Chinese Chinese Tokyo Japan,REAL

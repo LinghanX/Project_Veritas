@@ -1,20 +1,22 @@
 import math
 import os
+import json
 import pandas as pd
-import numpy as np
-import scipy.sparse
-import scipy.io
 import nltk.data
 import nltk.tokenize
 import nltk.stem
 from nltk.corpus import stopwords
-from collections import Counter
 
 from IPython.display import display
 
 SMOOTHNING_FACTOR = 1
 world_label_matrix = []
 NUM_OF_LABELS = 2
+# Traning data consists of 70 % of the original
+# input file
+TRAINING_SPLIT_PERCENT = 0.70
+DATA_FILE = "../data/fake_or_real_news_nb.csv"
+TRAINING_FILE = "../data/training_naive_bayes.json"
 
 label_index = {
     "FAKE": 0,
@@ -36,7 +38,6 @@ def extract_words(text, stemmer = None, remove_stopwords = False):
         words = [stemmer.stem(word.lower()) for word in tokens]
     if remove_stopwords:
         words = [word for word in words if word not in stopwords.words('english')]
-
     return words
 
 def build_vocabulary(documents):
@@ -45,7 +46,7 @@ def build_vocabulary(documents):
     """
     vocabulary = set()
     for doc in documents:
-        vocabulary.update([word for word in doc])
+        vocabulary.update([word for word in doc if word != "text"])
     vocabulary = list(vocabulary)
     return vocabulary
 
@@ -100,7 +101,8 @@ def label_word_count_matrix(vocabulary, documents):
             matrix[row_index][col_index] += row["Transformed text"].count(vocabulary[row_index])
     return matrix
 
-def prob_of_wrd_gvn_class(vocabulary, fake_word_count, real_word_count, label_word_matrix, word):
+def prob_of_wrd_gvn_class(
+    vocabulary, fake_word_count, real_word_count, label_word_matrix, word):
     """
     Computes the probabilities for the given text for given class
     """
@@ -119,6 +121,59 @@ def prob_of_wrd_gvn_class(vocabulary, fake_word_count, real_word_count, label_wo
         word_frequency_in_real_class + SMOOTHNING_FACTOR)/float(
         real_word_count + num_of_words)
     return prob_of_wrd_gvn_fake, prob_of_wrd_gvn_real
+
+def evaluateForAccuracy(testingDF, prior_of_fake, prior_of_real):
+    """
+    Testing dataFrame will get generated from the original
+    Dataframe. Which constitutes the last 1901 rows
+    of the original Dataframe
+    """
+    results = []
+    trained_file = open(TRAINING_FILE, "r")
+    trainingData = json.loads(trained_file.read())
+    fake_word_count = 0
+    real_word_count = 0
+    total_words = 0
+    trainingDataDict = {}
+
+    # calculate the essentials from the trained dataset
+    for word, freq in trainingData:
+        total_words+=1
+        fake, real = freq
+        fake_word_count+=int(fake)
+        real_word_count+=int(real)
+        trainingDataDict[word] = (
+            int(fake), int(real))
+
+    # getLabels for each row in the testDataFrame
+    # calculates the accuracy count for predicted labels
+    accuracyCount = 0
+    snowball = nltk.stem.snowball.EnglishStemmer()
+    for index, row in testingDF.iterrows():
+        words = extract_words(row["text"], snowball, True)
+        product_gvn_fake = prior_of_fake
+        product_gvn_real = prior_of_real
+        label = None
+        for word in words:
+            freq_tuple = trainingDataDict.get(word, None)
+            fake_freq, real_freq = freq_tuple if freq_tuple else (0, 0)
+            prob_of_wrd_gvn_fake = float(
+                fake_freq + SMOOTHNING_FACTOR)/float(
+                fake_word_count + total_words)
+            prob_of_wrd_gvn_real = float(
+                real_freq + SMOOTHNING_FACTOR)/float(
+                real_word_count + total_words)
+            product_gvn_fake*=prob_of_wrd_gvn_fake
+            product_gvn_real*=prob_of_wrd_gvn_real
+        if product_gvn_real > product_gvn_fake:
+            label = "REAL"
+        else:
+            label = "FAKE"
+        if label == row["label"].strip().upper():
+            accuracyCount+=1
+    # Number of rows labeled accuratly/ Total number of rows
+    print "Accuracy %",float(accuracyCount)/float(len(testingDF))*100
+    return results
 
 
 def multinomial_NBC(
@@ -142,37 +197,54 @@ def multinomial_NBC(
     else:
         return "REAL"
 
+def get_priors(dataDF):
+    label_priors = calculate_prior_probabilities(dataDF)
+    prior_of_real = float(label_priors["REAL"])/float(label_priors["REAL"] + label_priors["FAKE"])
+    prior_of_fake = float(label_priors["FAKE"])/float(label_priors["REAL"] + label_priors["FAKE"])
+    return prior_of_real, prior_of_fake
+
 def main():
     try:
-        dataDF = pd.read_csv(
-            "small_dataset.csv",
+        dataDF_1 = pd.read_csv(
+            DATA_FILE,
             sep=',', lineterminator='\n',
             names = ["title", "text", "label"], encoding="utf-8")
+
+        # dataDF is used for training
+        dataDF = dataDF_1.copy()
+        dataDF = dataDF_1.head(
+            int(TRAINING_SPLIT_PERCENT * len(dataDF_1)))
+
+        #testingDF is used for testing
+        testingDF = dataDF_1.copy()
+        testingDF = testingDF.iloc[
+            int(TRAINING_SPLIT_PERCENT * len(dataDF_1)):]
+
+        print "Num of Rows in Source:Training:Test", len(dataDF_1), len(dataDF), len(testingDF)
+
+        print "Stemming, stopwords removal from data"
         snowball = nltk.stem.snowball.EnglishStemmer()
         dataDF["Transformed text"] = dataDF.apply(
             lambda row: extract_words(row['text'], snowball, True), axis=1)
-        display(dataDF)
-        # Vocabulary building happens with the transformed text
+
+        print "Building vocabulary"
         vocabulary = build_vocabulary(dataDF["Transformed text"])
-        num_of_wrds = len(vocabulary)
-        print "|VOCABULARY|", num_of_wrds
-        label_word_count = get_word_count_by_label(dataDF)
+
+        print "Calculating priors"
         label_priors = calculate_prior_probabilities(dataDF)
-        matrix = label_word_count_matrix(vocabulary, dataDF)
         prior_of_real = float(label_priors["REAL"])/float(label_priors["REAL"] + label_priors["FAKE"])
         prior_of_fake = float(label_priors["FAKE"])/float(label_priors["REAL"] + label_priors["FAKE"])
-        real_wrd_cnt = label_word_count["REAL"]
-        fake_wrd_cnt = label_word_count["FAKE"]
-        print "|W(REAL)|", real_wrd_cnt
-        print "|W(FAKE)|", fake_wrd_cnt
-        print "|P(REAL)|", prior_of_real
-        print "|P(FAKE)|", prior_of_fake
-        print "SMOOTHNING FACTOR (S)", SMOOTHNING_FACTOR
-#         display(matrix)
-        print "Predicting the class for new Sample now"
-        new_sample = "October 31, 2016 at 4:52 am Pretty factual except for women in the selective service. American military is still voluntary only and hasn't been a draft since Vietnam war. The comment was made by a 4 star general of the army about drafting women and he said it to shut up liberal yahoos."
-        print multinomial_NBC(
-            new_sample, vocabulary, fake_wrd_cnt, real_wrd_cnt, matrix, prior_of_fake, prior_of_real)
+
+        print "Building Label Word count Matrix"
+        matrix = label_word_count_matrix(vocabulary, dataDF)
+
+        print "Writing Trained Model to file"
+        f = open(TRAINING_FILE, "w")
+        f.write(json.dumps(zip(vocabulary, matrix)))
+        f.close()
+
+        print "Calculating Accuracy Results"
+        evaluateForAccuracy(testingDF, prior_of_fake, prior_of_real)
     except IOError as err:
         print str(err)
     except UnicodeDecodeError as err:
