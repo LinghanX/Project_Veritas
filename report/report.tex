@@ -34,9 +34,9 @@ With companies such as Facebook and Google who provide ad revenue to sites that 
 }
 \end{figure}
 
-Fake news posts have exploited the feeds of Facebook users' which could deeply impact the options of our society if we loose our ability over time to decipher fake news from real news. Due to this problem, the data science community has looked to respond to this problem through a Kaggle competition called the Fake News Challenge \footnote{\url{http://www.fakenewschallenge.org}}. Determining real news from fake news is an extremely challenging task within the machine learning and natural language processing community. Creating models that accurately filter out fake news without removing real news sources is a very complicated task due to how we define fake news itself in order to correctly label real and fake news. 
-\\
-In our approach to tackle this problem, we wanted to combat fake news by implementing bayesian models that can differentiate fake news from real news. Expanding on this original approach, we have implemented several supervised machine learning based algorithms in order to compare text classifiers on fake news recognition. 
+Fake news posts have exploited the feeds of Facebook users' which could deeply impact the options of our society if we loose our ability over time to decipher fake news from real news. Due to this problem, the data science community has looked to respond to this problem through a Kaggle competition called the Fake News Challenge \footnote{\url{http://www.fakenewschallenge.org}}. Determining real news from fake news is an extremely challenging task within the machine learning and natural language processing community. Creating models that accurately filter out fake news without removing real news sources is a very complicated task due to how we define fake news itself in order to correctly label real and fake news.\\\\
+
+In our approach to tackle this problem, we wanted to combat fake news by implementing a bayesian model that can differentiate fake news from real news. Expanding on this original approach, we have implemented several supervised machine learning based algorithms using the scikit-learn package in order to compare text classifiers on fake news recognition. 
 
 
 \subsection*{1.1 The Data}
@@ -44,7 +44,7 @@ As mentioned previously, what makes this challenge interesting and hard is aroun
 
 
 \subsection*{1.2 Methods}
-We performed supervised machine learning techniques such as naive bayes, multinominal bayes with count vectorizor (bag-of-words) and Term Frequency–Inverse Document Frequency (TF-IDF), along with SVM and Random Tree Forest. With respect to language processing, tokenization, filtering, lemmatization, and stemming were all used for preprocessing the titles and body text of the articles in the data set. For our evaluation process, we used a confusion matrix to understand the accuracy of our models.
+We performed supervised machine learning techniques such as multinomial bayes, SVM, random forest and logistic regression. Out of these models, we implemented our own multinomial naive bayes algorithm and abstracted linguistic features using NLTK. For feature extraction, we implemented our own bag-of-words (count vectorizor) and Term Frequency–Inverse Document Frequency (TF-IDF), but also used the scikit-learn versions when using the out-of-the-box models. SVM, Random Forest, and linear regression were all run in order to compare the accuracy and output to our model. With respect to language processing, tokenization, filtering, lemmatization, and stemming were all used for preprocessing the titles and body text of the articles in the data set. For our evaluation process, we used a confusion matrix to understand the accuracy of our models.
 
 \subsection*{1.3 Related Work}
 Within the industry, companies such as Facebook have stumbled in this combat, mostly relying on users reporting fake news and outsourcing this task to third parties in order to remove direct bias. Although Facebook has made a few attempts and run some tests, it's clear that this is no easy task and can certainly annoy users.
@@ -56,16 +56,16 @@ Within the industry, companies such as Facebook have stumbled in this combat, mo
 }
 \end{figure}
 
-Some of the top teams that participated in the Fake News Challenge ended up using neural networks to get the best results. The number one team, SOLAT in the SWEN\footnote{\url{https://github.com/Cisco-Talos/fnc-1}}, received the best results using a weighted average between gradient-boosted decision trees and a deep convolutional neural network. Looking at the models that many teams had to take in order to receive the best results, we were not expecting our naive bayes model to product great results.
+Some of the top teams that participated in the Fake News Challenge ended up using neural networks to get the best results. The number one team, SOLAT in the SWEN\footnote{\url{https://github.com/Cisco-Talos/fnc-1}}, received the best results using a weighted average between gradient-boosted decision trees and a deep convolutional neural network. Looking at the models that many teams had to take in order to receive the best results, we were not expecting our naive bayes model to produce the best results. However, we felt that it was a good implementation when coupled with proper language processing and feature extraction techniques.
 
 \section*{2 Supervised Approach}
 
 \subsection*{2.1 Feature Extraction}
 
-For feature extraction, we used the body text of the articles in the data set and ignored the titles. We thought that using the longer text would allow for distinct words and features from the data set. For understanding if the words and tokens in the articles text had a significant impact on whether the news was fake or real. 
-\\
-Given a list of documentations, feature extraction converts each of the documents into a list of features, generating a sparse matrix for our Naive Bayes model. Features from our text classifier could include anything from manually created labels to the occurrence of words in the texts. In our case the naive assumption is that given that fact that a document is fake or authentic, the occurrence of each word is independent from each other. To implement our feature extraction, we first extracted words from the documents/text. To do this, we used stop words, tokenization, and stemming.
-\\
+For feature extraction, we used the body text of the articles in the data set and ignored the titles. We thought that using the longer text would allow for distinct words and features from the data set. For understanding if the words and tokens in the articles text had a significant impact on whether the news was fake or real.\\\\
+
+Given a list of documentations, feature extraction converts each of the documents into a list of features, generating a sparse matrix for our Naive Bayes model. Features from our text classifier could include anything from manually created labels to the occurrence of words in the texts. In our case the naive assumption is that given that fact that a document is fake or authentic, the occurrence of each word is independent from each other. To implement our feature extraction, we first extracted words from the documents/text. To do this, we used stop words, tokenization, and stemming.\\\\
+
 English stop words were removed from the data for better results. Stop words are frequent in our natural language but usually doesn't have additional information, such as words like "a", "on", "this", "the", "is", etc. By removing them the distraction in the vocabulary is usually reduced. In tokenization, the document is tokenized into a list of words, with all the punctuation being taken away and making all words lower case. In stemming, the words that have the same roots are assigned to the same root word. For example: "attack", "attacking" and "attacked" will be categorized as the same root word, "attack".
 
 \subsubsection*{2.1.1 Count Vectorization}
@@ -85,31 +85,83 @@ In the resulting matrix, we apply the idf with the generated tf to produce a wei
 
 $$tf-idf(w)=tf(w)*idf(w)$$
 
-Note that the 1 is there as a 'smoothing factor' to address the situation that the denominator is 0. The final step of our feature extraction is to normalize the TF-IDF matrix so that the resulting variance between each word are reduced to reflect their weighted value.
+Note that the 1 is there as a 'smoothing factor' to address the situation that the denominator is 0. The final step of our feature extraction is to normalize the TF-IDF matrix so that the resulting variance between each word are reduced to reflect their weighted value.\\
+
+TfidfVectorizor from the scikit-learn package was used with a max threshold set at 0.7 in order to remove words which appear in more than 70 percent of the articles. Before buildings the vectors, we removed English stop words from the data set and performed tokenization and stemming.
 
 \subsection*{2.2 Models}
 
+
+
 \subsubsection*{2.2.1 Multinominal Naive Bayes}
 
+Naive Bayes is often used for text classification problems since it is  fairly straight-forward to implement and efficient. Although the algorithm assumes that the features are independent, it's obvious to think that if an article has "Donald", it will likely have "Trump", making this independence assumption false. In turn, the probabilities would be multiplied as if they were independent and overestimate the probability that an article belongs to a particular label or class. In this case you would think that naive bayes would not perform well, however, it does perform well enough even when there are strong dependencies because they tend to cancel one another out [7].\\\\
+
+ADD SHUBHI'S WORK HERE
 
 
-\subsubsection*{2.2.2 SVM}
+\subsubsection*{2.2.2 Support Vector Machines}
+
+Although not as computationally fast as naive bayes, a linear support vector machine is widely known as one of the best  algorithms for text classification. It's a great binary classifier since it generates a hyperplane which separates the training data as far as possible, so it performs well with a high number of features. In further explorations of this project we would like to implement it ourselves, but due to time constraints we used the scikit-learn SVM model using our features extracted with TF-IDF and trained it with the data. As expected, we received the best results using this model with a 93 percent accuracy. Using the bag-of-words approach for feature extraction resulted in an 87 percent accuracy.
+
 
 
 \subsubsection*{2.2.3 Random Forest}
  
  
-\subsubsection*{2.2.4 Neural Network}
+\subsubsection*{2.2.4 Linear Regression}
 
 
 \section*{3 Evaluation}
 
-\section*{4 Acknowledgments}
+We originally anticipated that feature extraction using TF-IDF would give better results for all models. However, using the bag-of-words approach with our MNB implementation proved to be a fast and fairly accurate approach in the indentification of fake and real news with this dataset. MNB using TF-IDF proved to be the classifier that was least correct. Interestingly enough, it seemed that stemming an lemmatization slightly decreases the accuracy of prediction for all models. The SVM algorithm showed the best results.
+
+\begin{figure}[h]
+\centering
+\subfigure[MNB (Count Vector)]
+{
+\includegraphics[width=0.2\linewidth]{nb_cv}
+}
+\subfigure[MNB (TF-IDF)]
+{
+\includegraphics[width=0.2\linewidth]{nb_tfidf}
+}
+\subfigure[Random Forest (CV)]
+{
+\includegraphics[width=0.2\linewidth]{rf_cv}
+}
+\subfigure[Random Forest (TF-IDF)]
+{
+\includegraphics[width=0.2\linewidth]{rf_tfidf}
+}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\subfigure[SVM (Count Vector)]
+{
+\includegraphics[width=0.2\linewidth]{svm_cv}
+}
+\subfigure[SVM (TF-IDF)]
+{
+\includegraphics[width=0.2\linewidth]{svm_tfidf}
+}
+\subfigure[Linear Regression (CV)]
+{
+\includegraphics[width=0.2\linewidth]{reg_cv}
+}
+\subfigure[L. Regression (TF-IDF)]
+{
+\includegraphics[width=0.2\linewidth]{reg_tfidf}
+}
+\end{figure}
 
 
-\section*{5 Discussion}
+\section*{4 Acknowledgments and Discussion}
 
-Through our implementations and attempts to combat fake news, it is clear that it is no easy task, but it is a solvable problem using artificial intelligence and machine learning. It is a problem that could impact our society's perceptions and opinions if it is not addressed by the technological community.
+The entire team participated in the implementation of the multinomial naive bayes model, presentation and writing the report. With respect to feature extraction, Linghan did the majority of the work. Shubhi took on the preprocessing, including stemming and tokenization with the use of NLTK. Emily prepared the evaluations and also wrote the code to train the other models for comparisons. Finally, we would like to thanks Prof. Stacy and Dan Feng for their direction and guidance during this project.
+\\\\
+Through our implementations and attempts to combat fake news, it is clear that it is no easy task, but it looks to be a solvable problem using artificial intelligence, machine learning, and natural language processing. It is a problem that could impact our society's perceptions and opinions if it is not addressed by the technological community.
 
 
 \begin{thebibliography}{9}
@@ -144,6 +196,11 @@ Russel and Norvig.
 \textit{Talos Targets Disinformation with Fake News Challenge Victory}.
 [\textit{Talos Intelligence}]. 
  \url{https://blog.talosintelligence.com/2017/06/talos-fake-news-challenge.html}.
+ 
+\bibitem{nb}  
+\textit{The Optimality of Naive Bayes}.
+[\textit{Harry Zhang}]. 
+ \url{http://www.cs.unb.ca/~hzhang/publications/FLAIRS04ZhangH.pdf}.
 
 \end{thebibliography}
 
