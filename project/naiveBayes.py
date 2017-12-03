@@ -14,8 +14,8 @@ world_label_matrix = []
 NUM_OF_LABELS = 2
 # Traning data consists of 70 % of the original
 # input file
-TRAINING_SPLIT_PERCENT = 0.80
-DATA_FILE = "../data/small_dataset.csv"
+TRAINING_SPLIT_PERCENT = 0.70
+DATA_FILE = "../data/fake_or_real_news_nb.csv"
 TRAINING_FILE = "../data/training_naive_bayes.json"
 
 label_index = {
