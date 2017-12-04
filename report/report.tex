@@ -101,8 +101,9 @@ For our implementation of a Multinomial Bayes classifier, we segregated the data
 
 Here is a sample of the trained model:
 
-\begin{tabular}{l*{6}{c}r}
+\begin{table}[h]
 \centering
+\begin{tabular}{l*{6}{c}r}
 Vocabulary     & FAKE & REAL \\
 \hline
 trump 			& 128 & 1024   \\
@@ -110,6 +111,7 @@ truce            & 256 & 32  \\
 israel           & 512 & 2048  \\
 president     & 16 & 64  \\
 \end{tabular}\\
+\end{table}
 
 For testing, each news sample is transformed to the tokens as explained above and for each word token the probability of the word given a label class is calculated using the following formulae:
 
