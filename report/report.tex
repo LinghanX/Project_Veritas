@@ -36,7 +36,7 @@ With companies such as Facebook and Google who provide ad revenue to sites that 
 
 Fake news posts have exploited the feeds of Facebook users' which could deeply impact the options of our society if we loose our ability over time to decipher fake news from real news. Due to this problem, the data science community has looked to respond to this problem through a Kaggle competition called the Fake News Challenge \footnote{\url{http://www.fakenewschallenge.org}}. Determining real news from fake news is an extremely challenging task within the machine learning and natural language processing community. Creating models that accurately filter out fake news without removing real news sources is a very complicated task due to how we define fake news itself in order to correctly label real and fake news.\\
 
-In our approach to tackle this problem, we wanted to combat fake news by implementing a bayesian model that can differentiate fake news from real ones. The team first implement a multinomial naive bayes model using both count and term frequency- inverse document frequency vectorizer, analyzed different implementation approaches. Based on the understanding built through it, more advanced models were explored through the scikit-learn machine learning package. The results, in terms of accuracy are explored and discussed below.
+In our approach to tackle this problem, we wanted to combat fake news by implementing a bayesian model that can differentiate fake news from real news. Expanding on this original approach, we have implemented several supervised machine learning based algorithms using the scikit-learn package in order to compare text classifiers on fake news recognition. 
 
 
 \subsection*{1.1 The Data}
@@ -62,9 +62,9 @@ Some of the top teams that participated in the Fake News Challenge ended up usin
 
 \subsection*{2.1 Feature Extraction}
 
-For feature extraction, we used the body text of the articles in the data set and ignored the titles. We thought that using the longer text would allow for distinct words and features from the data set. For understanding if the words and tokens in the articles text had a significant impact on whether the news was fake or real.\\\\
+For feature extraction, we used the body text of the articles in the data set and ignored the titles. We thought that using the longer text would allow for distinct words and features from the data set. For understanding if the words and tokens in the articles text had a significant impact on whether the news was fake or real.\\
 
-Given a list of documentations, feature extraction converts each of the documents into a list of features, generating a sparse matrix for our Naive Bayes model. Features from our text classifier could include anything from manually created labels to the occurrence of words in the texts. In our case the naive assumption is that given that fact that a document is fake or authentic, the occurrence of each word is independent from each other. To implement our feature extraction, we first extracted words from the documents/text. To do this, we used stop words, tokenization, and stemming.\\\\
+Given a list of documentations, feature extraction converts each of the documents into a list of features, generating a sparse matrix for our Naive Bayes model. Features from our text classifier could include anything from manually created labels to the occurrence of words in the texts. In our case the naive assumption is that given that fact that a document is fake or authentic, the occurrence of each word is independent from each other. To implement our feature extraction, we first extracted words from the documents/text. To do this, we used stop words, tokenization, and stemming.\\
 
 English stop words were removed from the data for better results. Stop words are frequent in our natural language but usually doesn't have additional information, such as words like "a", "on", "this", "the", "is", etc. By removing them the distraction in the vocabulary is usually reduced. In tokenization, the document is tokenized into a list of words, with all the punctuation being taken away and making all words lower case. In stemming, the words that have the same roots are assigned to the same root word. For example: "attack", "attacking" and "attacked" will be categorized as the same root word, "attack".
 
@@ -97,7 +97,30 @@ TfidfVectorizor from the scikit-learn package was used with a max threshold set 
 
 Naive Bayes is often used for text classification problems since it is  fairly straight-forward to implement and efficient. Although the algorithm assumes that the features are independent, it's obvious to think that if an article has "Donald", it will likely have "Trump", making this independence assumption false. In turn, the probabilities would be multiplied as if they were independent and overestimate the probability that an article belongs to a particular label or class. In this case you would think that naive bayes would not perform well, however, it does perform well enough even when there are strong dependencies because they tend to cancel one another out [7].\\\\
 
-ADD SHUBHI'S WORK HERE
+For our implementation of a Multinomial Bayes classifier, we segregated the data corpus with 70 percent of it used for the purpose of training and 30 percent of it used for the purpose of accuracy estimation. We first tokenize the text by using  natural language processing techniques which includes word stemming and stop words removal. This is done for all news sample in the entire training corpus to generate a vocabulary of unique words. The entire vocabulary of unique words constitutes as features. In our implementation of Naive Bayes, we find the frequency distribution of each word in the vocabulary for the given class i.e. fake/real. The trained model is essentially a word-label count matrix of size $|V| x |L|$ where $|V|$ is the size of the vocabulary and $|L|$ is the number of labels. \\\\
+
+Here is a sample of the trained model:
+
+\begin{tabular}{l*{6}{c}r}
+\centering
+Vocabulary     & FAKE & REAL \\
+\hline
+trump 			& 128 & 1024   \\
+truce            & 256 & 32  \\
+israel           & 512 & 2048  \\
+president     & 16 & 64  \\
+\end{tabular}\\
+
+For testing, each news sample is transformed to the tokens as explained above and for each word token the probability of the word given a label class is calculated using the following formulae:
+
+$$P(w|c) = (count(w, c) + f(s))/(count(c) + |V|)$$
+
+Where c is the class which can be either fake or real. P(w|c) is the probability of the word given class c. count(w, c) is the count of word w in the class c which is obtained by look up in the trained model. count(c) is the count of all the words in the class c. |V| is the size of vocabulary. f(s) is the smoothening factor  which is 1 in our case. smoothening is done to reduce the impact of unseen words in the trained corpus.\\
+
+The final probability of classification is worked out by taking product of all of the P(w|c) for each token:\\
+$$P(sample|fake) = P(fake) * P(w|fake)$$ for all w belonging to the sample
+$$P(sample|real) = P(real) * P(w|real)$$ for all w belonging to the sample
+$$P(sample|c) = max(P(sample|fake), P(sample|real))$$
 
 
 \subsubsection*{2.2.2 Support Vector Machines}
@@ -206,6 +229,13 @@ Russel and Norvig.
 \textit{The Optimality of Naive Bayes}.
 [\textit{Harry Zhang}]. 
  \url{http://www.cs.unb.ca/~hzhang/publications/FLAIRS04ZhangH.pdf}.
+ 
+ 
+\bibitem{rf}  
+\textit{Multinomial Naive Bayes}.
+[\textit{
+Rafael Merino García}]. 
+ \url{https://www.youtube.com/watch?v=km2LoOpdB3A&t=424s}.
 
 \end{thebibliography}
 
