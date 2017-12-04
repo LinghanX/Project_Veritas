@@ -15,7 +15,7 @@ NUM_OF_LABELS = 2
 # Traning data consists of 70 % of the original
 # input file
 TRAINING_SPLIT_PERCENT = 0.70
-DATA_FILE = "../data/fake_or_real_news_nb.csv"
+DATA_FILE = "../data/medium_size_data.csv"
 TRAINING_FILE = "../data/training_naive_bayes.json"
 
 label_index = {
@@ -151,8 +151,8 @@ def evaluateForAccuracy(testingDF, prior_of_fake, prior_of_real):
     snowball = nltk.stem.snowball.EnglishStemmer()
     for index, row in testingDF.iterrows():
         words = extract_words(row["text"], snowball, True)
-        product_gvn_fake = prior_of_fake
-        product_gvn_real = prior_of_real
+        product_gvn_fake = math.log(prior_of_fake, 2)
+        product_gvn_real = math.log(prior_of_real, 2)
         label = None
         for word in words:
             freq_tuple = trainingDataDict.get(word, None)
@@ -163,8 +163,8 @@ def evaluateForAccuracy(testingDF, prior_of_fake, prior_of_real):
             prob_of_wrd_gvn_real = float(
                 real_freq + SMOOTHNING_FACTOR)/float(
                 real_word_count + total_words)
-            product_gvn_fake*=prob_of_wrd_gvn_fake
-            product_gvn_real*=prob_of_wrd_gvn_real
+            product_gvn_fake+=math.log(prob_of_wrd_gvn_fake, 2)
+            product_gvn_real+=math.log(prob_of_wrd_gvn_real, 2)
         if product_gvn_real > product_gvn_fake:
             label = "REAL"
         else:
@@ -188,8 +188,8 @@ def multinomial_NBC(
                 fake_wrd_cnt,
                 real_wrd_cnt,
                 label_wrd_matrix, word)
-        product_gvn_fake*=prob_of_wrd_gvn_fake
-        product_gvn_real*=prob_of_wrd_gvn_real
+        product_gvn_fake += math.log(prob_of_wrd_gvn_fake, 2)
+        product_gvn_real += math.log(prob_of_wrd_gvn_real, 2)
 
     print "Probability of word|fake", product_gvn_fake
     print "Probability of word|real", product_gvn_real
