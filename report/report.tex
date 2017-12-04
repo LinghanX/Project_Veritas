@@ -40,14 +40,16 @@ In our approach to tackle this problem, we wanted to combat fake news by impleme
 
 
 \subsection*{1.1 The Data}
-As mentioned previously, what makes this challenge interesting and hard is around the very definition of fake news. Since we did not want to be caught up in the process of deciphering, scraping the web, and labeling fake news vs. real news, we found a dataset that contains almost 11,000 articles that are tagged as either real or fake news \footnote{\url{https://github.com/GeorgeMcIntire/fake_real_news_dataset}}. The data set seems to follow the definition of fake news provided by First Draft News comprises of 7 types of fake content: false connection, false context, manipulated content, satire or parody, misleading content, imposter content, and fabricated content. We started by separating the labels and set up training data and testing data.
+As mentioned previously, what makes this challenge interesting and hard is around the very definition of fake news. Since we did not want to be caught up in the process of deciphering, scraping the web, and labeling fake news vs. real news, we found a dataset that contains over 6,000 articles that are tagged as either real or fake news \footnote{\url{https://github.com/GeorgeMcIntire/fake_real_news_dataset}}. The fake news in this dataset is from the Kaggle fake news data set\footnote{\url{https://www.kaggle.com/mrisdal/fake-news}} that was released from the 2016 election.
+
+The real news was aquired through web scraping articles off of All Sides, which is a website that is dedicated to hosting news from across the political spectrum. The articles that were chosen for the real dataset came from media organizations such as the New York Times, WSJ, Bloomberg, NPR, and the Guardian. These were all published in 2015 and 2016. The dataset is constructed with almost equal parts which gives the models null accuracy to be about 50 percent. The number of articles that are identified as real is 3171, and the number of articles identified as fake is 3164. The data set seems to follow the definition of fake news provided by First Draft News comprises of 7 types of fake content: false connection, false context, manipulated content, satire or parody, misleading content, imposter content, and fabricated content. We started by separating the labels and set up training data and testing data.
 
 
 \subsection*{1.2 Methods}
 We performed supervised machine learning techniques such as multinomial bayes, SVM, random forest and logistic regression. Out of these models, we implemented our own multinomial naive bayes algorithm and abstracted linguistic features using NLTK. For feature extraction, we implemented our own bag-of-words (count vectorizor) and Term Frequency–Inverse Document Frequency (TF-IDF), but also used the scikit-learn versions when using the out-of-the-box models. SVM, Random Forest, and linear regression were all run in order to compare the accuracy and output to our model. With respect to language processing, tokenization, filtering, lemmatization, and stemming were all used for preprocessing the titles and body text of the articles in the data set. For our evaluation process, we used a confusion matrix to understand the accuracy of our models.
 
 \subsection*{1.3 Related Work}
-Within the industry, companies such as Facebook have stumbled in this combat, mostly relying on users reporting fake news and outsourcing this task to third parties in order to remove direct bias. Although Facebook has made a few attempts and run some tests, it's clear that this is no easy task and can certainly annoy users.
+Within the industry, companies such as Facebook have stumbled in this combat, mostly relying on users reporting fake news and outsourcing this task to third parties in order to remove direct bias. Identifying and labeling the data itself is the extreme complexity around this issue in industry. With respect to our implementation, receiving a data set that has already been labeled with fake news and real news does take that complexity out of the issue at hand. This process in itself is very complex and may take multiple steps. Interestingly enough, Facebook has found that users who post a signification amount, about 50 times or more a day, are most likely shares news or posts that the company has identified as fake. With this approach taken in to consideration, it may be a possible piece of the solution in order to lessen the distribution of fake news. In another test, Facebook created a test that prioritized comments to the top of news feed that had the word 'fake' in it. Although the company as made a few attempts and run some tests so far, it's clear that this is no easy task and can certainly annoy users.
 
 \begin{figure}[h]
 \centering
@@ -56,7 +58,13 @@ Within the industry, companies such as Facebook have stumbled in this combat, mo
 }
 \end{figure}
 
-Some of the top teams that participated in the Fake News Challenge ended up using neural networks to get the best results. The number one team, SOLAT in the SWEN\footnote{\url{https://github.com/Cisco-Talos/fnc-1}}, received the best results using a weighted average between gradient-boosted decision trees and a deep convolutional neural network. Looking at the models that many teams had to take in order to receive the best results, we were not expecting our naive bayes model to produce the best results. However, we felt that it was a good implementation when coupled with proper language processing and feature extraction techniques.
+With in the Fake News Challenge, teams were tasked with assessing the veracity of a news story by identifying fake news through Stance Detection as a building block for fact-checking. The challenge defines stance detection as "estimating the relative perspective (or stance) of two pieces of text relative to a topic, claim or issue". With in this data set, the input was a headline and body of text, and the output would classify the stance of the body text relative to the claim in the headline. The four categories were:\\
+Agrees: The body text agrees with the headline.\\
+Disagrees: The body text disagrees with the headline.\\
+Discusses: The body text discuss the same topic as the headline, but does not take a position\\
+Unrelated: The body text discusses a different topic than the headline\\
+
+With respect to labeling the stance of an article to then determine if it is real or fake is a difficult task of this entire process. Some of the top teams that participated in the Fake News Challenge ended up using neural networks to get the best results. The number one team, SOLAT in the SWEN\footnote{\url{https://github.com/Cisco-Talos/fnc-1}}, received the best results using a weighted average between gradient-boosted decision trees and a deep convolutional neural network. The combination of these two approaches detected the correct stance for each headline, which gave the team a relative score of 82.02 in the competition. Looking at the models that many teams had to use in order to receive the best results, we were not expecting our naive bayes model to produce the best results. However, we felt that on this dataset it was a good implementation when coupled with proper language processing and feature extraction techniques since our articles were already labeled as either real or fake.
 
 \section*{2 Supervised Approach}
 
@@ -95,11 +103,11 @@ TfidfVectorizor from the scikit-learn package was used with a max threshold set 
 
 \subsubsection*{2.2.1 Multinominal Naive Bayes}
 
-Naive Bayes is often used for text classification problems since it is  fairly straight-forward to implement and efficient. Although the algorithm assumes that the features are independent, it's obvious to think that if an article has "Donald", it will likely have "Trump", making this independence assumption false. In turn, the probabilities would be multiplied as if they were independent and overestimate the probability that an article belongs to a particular label or class. In this case you would think that naive bayes would not perform well, however, it does perform well enough even when there are strong dependencies because they tend to cancel one another out [7].\\\\
+Naive Bayes is often used for text classification problems since it is  fairly straight-forward to implement and efficient. Although the algorithm assumes that the features are independent, it's obvious to think that if an article has "Donald", it will likely have "Trump", making this independence assumption false. In turn, the probabilities would be multiplied as if they were independent and overestimate the probability that an article belongs to a particular label or class. In this case you would think that naive bayes would not perform well, however, it does perform well enough even when there are strong dependencies because they tend to cancel one another out [7].\\
 
-For our implementation of a Multinomial Bayes classifier, we segregated the data corpus with 70 percent of it used for the purpose of training and 30 percent of it used for the purpose of accuracy estimation. We first tokenize the text by using  natural language processing techniques which includes word stemming and stop words removal. This is done for all news sample in the entire training corpus to generate a vocabulary of unique words. The entire vocabulary of unique words constitutes as features. In our implementation of Naive Bayes, we find the frequency distribution of each word in the vocabulary for the given class i.e. fake/real. The trained model is essentially a word-label count matrix of size $|V| x |L|$ where $|V|$ is the size of the vocabulary and $|L|$ is the number of labels. \\\\
+For our implementation of a Multinomial Bayes classifier, we segregated the data corpus with 70 percent of it used for the purpose of training and 30 percent of it used for the purpose of accuracy estimation. We first tokenize the text by using  natural language processing techniques which includes word stemming and stop words removal. This is done for all news sample in the entire training corpus to generate a vocabulary of unique words. The entire vocabulary of unique words constitutes as features. In our implementation of Naive Bayes, we find the frequency distribution of each word in the vocabulary for the given class i.e. fake/real. The trained model is a word-label count matrix of size $|V| x |L|$ where $|V|$ is the size of the vocabulary and $|L|$ is the number of labels. \\\\
 
-Here is a sample of the trained model:
+Below is a sample of the trained model:
 
 \begin{table}[h]
 \centering
@@ -119,7 +127,7 @@ $$P(w|c) = (count(w, c) + f(s))/(count(c) + |V|)$$
 
 Where c is the class which can be either fake or real. P(w|c) is the probability of the word given class c. count(w, c) is the count of word w in the class c which is obtained by look up in the trained model. count(c) is the count of all the words in the class c. |V| is the size of vocabulary. f(s) is the smoothening factor  which is 1 in our case. smoothening is done to reduce the impact of unseen words in the trained corpus.\\
 
-The final probability of classification is worked out by taking product of all of the P(w|c) for each token:\\
+The final probability of classification is formulated by taking the product of all of the P(w|c) for each token:\\
 $$P(sample|fake) = P(fake) * P(w|fake)$$ for all w belonging to the sample
 $$P(sample|real) = P(real) * P(w|real)$$ for all w belonging to the sample
 $$P(sample|c) = max(P(sample|fake), P(sample|real))$$
@@ -133,27 +141,29 @@ Although not as computationally fast as naive bayes, a linear support vector mac
 
 \subsubsection*{2.2.3 Random Forest}
 
-Random forest was tried as a classifier for the same training data set and test data set. It
-yielded a lower accuracy value than all of the models except multinomial naive bayes TF-IDF. Our model using a Random Forest Classifier achieves an accuracy of roughly 83 percent when using features such as TF-IDF and count vector.
+A random forest builds a number of decision trees at training time and then outputs the class that is the mode of the classes or the mean prediction of the individual trees. In a decision tree, we have a set of nodes with the structure of a tree graph. Starting at the root, a decision is made, and then at each node the input input is tested. From the outcome that we get from this, we then go on to the next node. If a node is a leaf then that is the decision, being either real news or fake news. A random forest was tried as a classifier for the same training data set and test data set. It
+yielded a lower accuracy value than all of the models except multinomial naive bayes TF-IDF. Our model using a Random Forest Classifier achieves an accuracy of roughly 83 percent when using features such as TF-IDF and count vector. Although features can be dependent for this model, since there are a large number of spare features, we believed that this caused overfitting and resulted in a lower accuracy.
  
  
 \subsubsection*{2.2.4 Logistic Regression}
-Unlike SVMS, Logistic regression allows probabilities to be modeled, and unlike naive bays, features can be dependent, so we originally believed that this would give fairly accurate results. Each word feature $x_i$ is given a weight $w_i$. With the following logistic function, we can represent the probability for each fake or real classification:
+Unlike SVMS, Logistic regression allows probabilities to be modeled, and unlike naive bays, features can be dependent, so we originally believed that this would give fairly accurate results. It takes a probabilistic approach to learning discriminative functions. Each word feature $x_i$ is given a weight $w_i$. With the following logistic function, we can represent the probability for each fake or real classification:
 
-$$P(c = real | x_1, x_2,..x_n) = 1 / (1 + e^w_0 + $$
+$$P(c = real | x_1, x_2,..x_n) = \frac{1}{1 + e^{w_0 + \sum^n w_i x_i}} $$
+
+$$P(c = fake | x_1, x_2,..x_n) = 1 - P(c = real | x_1, x_2,..x_n) = \frac{e^{w_0 + \sum^n w_i x_i}}{1+e^{w_0 + \sum^n w_i x_i}}$$
 
 where $w_0$ is the bias.
 
 \section*{3 Evaluation}
 
-In order to evaluate our models, we calculated the accuracy. The accuracy of the naive bayes model that we implemented was 88 percent, which was what we were expecting. Properly trained Naive Bayes classifiers are usually astonishingly accurate and fairly quick to train, so we were expected decent results, but not the best. The accuracy results of all of our results can be see below:
+In order to evaluate our models, we calculated the accuracy. The accuracy of the naive bayes model that we implemented was almost percent, which was what we were expecting on this data set. In comparison to the sklearn MNB implementation, we were only off by 1 percent accuracy. We believe this could be because of how we did our preprocessing and feature extraction, and further adjustments could have resulted in a more accurate model. If we used the same model on the Fake News Stance challenge, we believe that this would result in a far lower accuracy considering the complexity of the models that the teams had used. Properly trained Naive Bayes classifiers are usually astonishingly accurate and fairly quick to train, so we were expected decent results, but not the best. The accuracy results of all of our results can be see below:
 
 \begin{table}[h]
 \centering
 \begin{tabular}{l*{6}{c}r}
 Model     & Accuracy  \\
 \hline
-Naïve Bayes  (own implementation) & .88   \\
+Naïve Bayes  (own implementation) & .878   \\
 Multinomial Naïve Bayes (CV)       & .888  \\
 Multinomial Naïve Bayes (TF-IDF)      & .835  \\
 Random Forest (CV)     & .839  \\
@@ -217,9 +227,9 @@ We originally anticipated that feature extraction using TF-IDF would give better
 The entire team participated in the implementation of the naive bayes model, presentation and writing the report. With respect to feature extraction, Linghan did the majority of the work. Shubhi took on the preprocessing, including stemming and tokenization with the use of NLTK. Emily prepared the evaluations and also wrote the code to train the other models for comparisons. Finally, we would like to thank Prof. Stacy and Dan Feng for their direction and guidance during this project.
 
 \section*{5 Discussion}
-As we have observed, the classification results produced by our naive bayes implementation are fairly satisfying. Although naive bayes is one of the simpiler machine learning algorithms to implement, we encountered the problems and difficulties with a lot of natural language processing and how feature extraction is extremely important in order to get the best results from the model. When running our models with shorter text articles, such as the titles/headings of the documents, we found that the results were less accurate overall. It would be interesting to further explore how our model runs against other datasets and what the results may look like with respect to political affiliations, such as 'left', 'unknown' or 'right'.
+As we have observed, the classification results produced by our naive bayes implementation are fairly satisfying. Although naive bayes is one of the easier machine learning algorithms to implement, we encountered the problems and difficulties with a lot of natural language processing and how feature extraction is extremely important in order to get the best results from the model. When running our models with shorter text articles, such as the titles/headings of the documents, we found that the results were less accurate overall. It would be interesting to further explore how our model runs against other datasets and we would like to continue exploration around stance detection in fake news.\\
 
-Through our implementations and attempts to combat fake news, it is clear that it is no easy task, but it looks to be a solvable problem using artificial intelligence, machine learning, and natural language processing. With the increasing amount of articles on the internet, preprocessing the data and extracting features is extremely important and difficult. This problem could impact our society's perceptions and opinions if it is not addressed by the AI community.
+Through our implementations and attempts to combat fake news, it is clear that this is no easy task, but it looks to be a solvable problem using artificial intelligence, machine learning, and natural language processing if we can find the building blocks to accurately identify and label fake news. With the increasing amount of articles on the internet, preprocessing the data and extracting features is extremely important and difficult. Overtime, if this problem is not addressed by the AI community, it could greatly impact our society's perceptions and opinions and lessen our ability to identify fake news.
 
 
 \begin{thebibliography}{9}
@@ -266,6 +276,20 @@ Russel and Norvig.
 [\textit{
 Rafael Merino García}]. 
  \url{https://www.youtube.com/watch?v=km2LoOpdB3A&t=424s}.
+ 
+\bibitem{fb}
+\textit{Facebook found a new way to identify spam and false news articles in your News Feed}
+[\textit{
+Kurt Wagner}]. 
+ \url{https://www.recode.net/2017/6/30/15896544/facebook-fake-news-feed-algorithm-update-spam}.
+
+\bibitem{ml} 
+Kevin Murphy. 
+\textit{Machine Learning, A Probabilistic Perspective.}.
+
+\bibitem{ml2} 
+Ethem Alpaydin. 
+\textit{Introduction in Machine Learning}.
 
 \end{thebibliography}
 
