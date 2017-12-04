@@ -138,13 +138,38 @@ yielded a lower accuracy value than all of the models except multinomial naive b
  
  
 \subsubsection*{2.2.4 Logistic Regression}
-Unlike SVMS, Logistic regression allows probabilities to be modeled, and unlike naive bays, features can be dependent, so we originally believed that this would give fairly accurate results.
+Unlike SVMS, Logistic regression allows probabilities to be modeled, and unlike naive bays, features can be dependent, so we originally believed that this would give fairly accurate results. Each word feature $x_i$ is given a weight $w_i$. With the following logistic function, we can represent the probability for each fake or real classification:
+
+$$P(c = real | x_1, x_2,..x_n) = 1 / (1 + e^w_0 + $$
+
+where $w_0$ is the bias.
 
 \section*{3 Evaluation}
 
+In order to evaluate our models, we calculated the accuracy. The accuracy of the naive bayes model that we implemented was 88 percent, which was what we were expecting. Properly trained Naive Bayes classifiers are usually astonishingly accurate and fairly quick to train, so we were expected decent results, but not the best. The accuracy results of all of our results can be see below:
+
+\begin{table}[h]
+\centering
+\begin{tabular}{l*{6}{c}r}
+Model     & Accuracy  \\
+\hline
+Naïve Bayes  (own implementation) & .88   \\
+Multinomial Naïve Bayes (CV)       & .888  \\
+Multinomial Naïve Bayes (TF-IDF)      & .835  \\
+Random Forest (CV)     & .839  \\
+Random Forest (TF-IDF)     & .838  \\
+SVM (CV)     & .87  \\
+SVM (TD-IDF)     & .93  \\
+Linear Regression (CV)  & .851 \\
+Linear Regression (TF-IDF)  & .923 \\
+\end{tabular}\\
+\end{table}
+
+
+
 To evaluate the different models and our results, we created a confusion matrix for each model in order to describe the performance of the classifier on the test data since we know the 'true'/original label.\\
 
-We originally anticipated that feature extraction using TF-IDF would give better results for all models. However, using the bag-of-words approach with our MNB implementation proved to be a fast and fairly accurate approach in the indentification of fake and real news with this dataset. MNB using TF-IDF proved to be the classifier that was least correct. Interestingly enough, it seemed that stemming an lemmatization slightly decreases the accuracy of prediction for all models. The fake news detection system that achieved the highest accuracy and best evaluation was the SVM using TF-IDF, and logistic regression with almost the same accuracy.
+We originally anticipated that feature extraction using TF-IDF would give better results for all models. However, using the bag-of-words approach with the MNB model proved to be a fast and fairly accurate approach in the indentification of fake and real news with this dataset. MNB using TF-IDF proved to be the classifier that was least correct. Interestingly enough, it seemed that stemming an lemmatization slightly decreases the accuracy of prediction for all models. The fake news detection system that achieved the highest accuracy and best evaluation was the SVM using TF-IDF, and logistic regression with almost the same accuracy.
 
 \begin{figure}[h]
 \centering
@@ -187,11 +212,14 @@ We originally anticipated that feature extraction using TF-IDF would give better
 \end{figure}
 
 
-\section*{4 Acknowledgments and Discussion}
+\section*{4 Acknowledgments}
 
-The entire team participated in the implementation of the multinomial naive bayes model, presentation and writing the report. With respect to feature extraction, Linghan did the majority of the work. Shubhi took on the preprocessing, including stemming and tokenization with the use of NLTK. Emily prepared the evaluations and also wrote the code to train the other models for comparisons. Finally, we would like to thanks Prof. Stacy and Dan Feng for their direction and guidance during this project.
-\\\\
-Through our implementations and attempts to combat fake news, it is clear that it is no easy task, but it looks to be a solvable problem using artificial intelligence, machine learning, and natural language processing. It is a problem that could impact our society's perceptions and opinions if it is not addressed by the technological community.
+The entire team participated in the implementation of the naive bayes model, presentation and writing the report. With respect to feature extraction, Linghan did the majority of the work. Shubhi took on the preprocessing, including stemming and tokenization with the use of NLTK. Emily prepared the evaluations and also wrote the code to train the other models for comparisons. Finally, we would like to thank Prof. Stacy and Dan Feng for their direction and guidance during this project.
+
+\section*{5 Discussion}
+As we have observed, the classification results produced by our naive bayes implementation are fairly satisfying. Although naive bayes is one of the simpiler machine learning algorithms to implement, we encountered the problems and difficulties with a lot of natural language processing and how feature extraction is extremely important in order to get the best results from the model. When running our models with shorter text articles, such as the titles/headings of the documents, we found that the results were less accurate overall. It would be interesting to further explore how our model runs against other datasets and what the results may look like with respect to political affiliations, such as 'left', 'unknown' or 'right'.
+
+Through our implementations and attempts to combat fake news, it is clear that it is no easy task, but it looks to be a solvable problem using artificial intelligence, machine learning, and natural language processing. With the increasing amount of articles on the internet, preprocessing the data and extracting features is extremely important and difficult. This problem could impact our society's perceptions and opinions if it is not addressed by the AI community.
 
 
 \begin{thebibliography}{9}
