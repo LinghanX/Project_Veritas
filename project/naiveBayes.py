@@ -7,7 +7,7 @@ import nltk.tokenize
 import nltk.stem
 from nltk.corpus import stopwords
 
-from IPython.display import display
+#from IPython.display import display
 
 SMOOTHNING_FACTOR = 1
 world_label_matrix = []
@@ -15,7 +15,7 @@ NUM_OF_LABELS = 2
 # Traning data consists of 70 % of the original
 # input file
 TRAINING_SPLIT_PERCENT = 0.70
-DATA_FILE = "../data/medium_size_data.csv"
+DATA_FILE = "../data/fake_or_real_news_nb.csv"
 TRAINING_FILE = "../data/training_naive_bayes.json"
 
 label_index = {
