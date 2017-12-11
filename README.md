@@ -18,8 +18,8 @@ Use naive bayes classifier to tell Fake News vs Real News.
 
 
 ## Install
-anaconda cloud
-scikit
+anaconda cloud (for jupyter notebooks)
+scikit-learn
 pandas
 
 ## Problem specification
@@ -46,5 +46,11 @@ Steps:
     * inverse document frequency(IDF): IDF measures how rare the term is across all documents in the corpus
 
     * normalization after the tf-idf: L2 norm
+
+## Files of Interest
+	- /project/naiveBayes.py
+	- /project/models_and_evals.ipynb
+	- /project/tfidf_implementation.ipynb
+	- /project/topicmodel.py
 
 
